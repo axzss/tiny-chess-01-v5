@@ -8,6 +8,19 @@ A 4 KB chess engine in Python: alpha-beta with iterative deepening, quiescence s
 
 v5 over v3: king pawn-shield safety (-12 per missing shield pawn, phase-tapered), aspiration windows (pv +/-40, depth >= 4, re-search on fail low/high), micro-optimized move generation and evaluation (local bindings), and a golfed main-loop fallback. Local practice Elo mean 1,573 (trials 1,545 / 1,364 / 1,809) vs v3's 1,451 on the same level-9 kit; best single trial 1,809. Packed with LZMA from the readable engine.py source (main.py 4,027 bytes).
 
+## Practice results (level-9 kit, 6 games/trial)
+
+| Variant | Trial 0 | Trial 1 | Trial 2 | Mean |
+|---------|---------|---------|---------|------|
+| v3b (baseline) | 1,451 | — | — | 1,451 |
+| v5a (this entry) | 1,545 | 1,364 | 1,809 | 1,573 |
+| v5b (MA 150k) | 1,545 | — | — | — |
+| v5c (rook on 7th) | 1,451 | — | — | — |
+| v5d (stronger passed pawns) | 1,545 | 1,654 | 1,451 | 1,550 |
+| v5e (king safety -20) | 1,451 | — | — | — |
+
+v5a is the best variant by 3-trial mean. Single-trial variance is large (one game swing ≈ 100 Elo); the mean is the honest number.
+
 ## Run it
 
 ```sh
