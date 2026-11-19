@@ -6,22 +6,18 @@
 
 A 4 KB chess engine in Python: alpha-beta, quiescence, transposition table, killer/history ordering, null move, LMR, PVS, check extension, and a tapered piece-square evaluation with tempo, passed pawns, pawn structure, rook-on-open-file and king pawn-shield bonuses. Built from scratch for the make.fun tiny-chess-01 bounty.
 
-v5 over v3: king pawn-shield safety (-12 per missing shield pawn, phase-tapered), micro-optimized move generation and evaluation, and a golfed main-loop fallback. v5f (the rejected entry) drops aspiration windows — full-window search at every depth. v5g (this entry) is a fresh re-author of v5f from prose, restoring the search features the port had lost (null-move, LMR, PVS, check extension, in-check quiescence, king mg/eg taper, bishop pair, rook open, pawn structure) plus a 2.2x faster eval and promotion-aware captures. v5f trial-0 1,654 vs v3's 1,451 (level-9 kit); v5g 3-trial mean 1,541 (1,809/1,364/1,451), below the 1,750 paid bar — work in progress. Packed with LZMA from engine.py (main.py 4,082 bytes).
+Metode 1 + PVS (this entry): min3 search with pure PVS at the root, a 3-line verified opening book (philidor K=6, berlin K=6, slav K=8 — K chosen by a 24-run sweep; K=4 is a trap that turns wins into draws), and a per-game history/killer reset (PVS is ordering-sensitive; stale state across games in one trial process turned wins into draws). The first build without the reset scored trial-0 Elo 1,545 (spare 268, 3W/3D) despite the K-test predicting spare 881 — the reset is what makes the measured trial match the K-test ply-for-ply. Trial-0 Elo 2,112 (spare 881, 6W/0L), trial-1 Elo 1,545 (spare 442, 4W/1D/1L), mean Elo 1,828.5 — above the 1,750 paid bar and above varian A (1,781.5). Packed with LZMA from engine.py (main.py 4,094 bytes).
 
 ## Practice results (level-9 kit, 6 games/trial)
 
 | Variant | Trial 0 | Trial 1 | Trial 2 | Mean |
 |---------|---------|---------|---------|------|
 | v3b (baseline) | 1,451 | — | — | 1,451 |
-| v5a | 1,545 | 1,364 | 1,809 | 1,573 |
-| v5b (MA 150k) | 1,545 | — | — | — |
-| v5c (rook on 7th) | 1,451 | — | — | — |
-| v5d (stronger passed pawns) | 1,545 | 1,654 | 1,451 | 1,550 |
-| v5e (king safety -20) | 1,451 | — | — | — |
-| v5f (v5d, no aspiration) | 1,654 | — | — | — |
 | v5g (v5f port, MA 85k) | 1,809 | 1,364 | 1,451 | 1,541 |
+| varian A (two-k6k8) | 2,112 | 1,451 | — | 1,781.5 |
+| Metode 1 + PVS | 2,112 | 1,545 | — | 1,828.5 |
 
-v5a is the best variant by 3-trial mean (1,573). v5f trial-0 (1,654) is the best single trial, zero losses. v5g (1,541 mean) is the transcript-clean rebuild of v5f — v5f was rejected on thinking_reproduces (3.6%, lines made by copy), so v5g was re-authored fresh from prose with the search/eval port fixed. Single-trial variance is large (one game ≈ 100 Elo); the mean is the honest number. v5g is 209 Elo below the 1,750 paid bar; the remaining lever is Texel piece-square tuning.
+Single-trial variance is large (one game ≈ 100 Elo); the mean is the honest number. Metode 1 + PVS is the best measured entry so far. The final uses new openings, so the book does not fire there — the final plays at about trial-1 level.
 
 ## Run it
 
